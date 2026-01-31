@@ -1,20 +1,17 @@
 {
   "manifest_version": 3,
-  "name": "Robots & Indexing Status Detector",
+  "name": "Robots & Indexing Detector",
   "version": "1.0.0",
-  "description": "Detect robots.txt, meta robots, canonical, and indexing signals for the current page.",
-  "permissions": ["activeTab", "scripting"],
+  "permissions": ["tabs"],
   "host_permissions": ["<all_urls>"],
   "background": {
     "service_worker": "background.js"
   },
+  "content_scripts": [{
+    "matches": ["<all_urls>"],
+    "js": ["content.js"]
+  }],
   "action": {
     "default_popup": "popup.html"
-  },
-  "content_scripts": [
-    {
-      "matches": ["<all_urls>"],
-      "js": ["content.js"]
-    }
-  ]
+  }
 }
