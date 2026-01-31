@@ -1,20 +1,16 @@
 {
   "manifest_version": 3,
   "name": "Robots.txt & Meta Block Detector",
-  "description": "Check if a page is blocked by robots.txt, meta robots, or HTTP headers.",
+  "description": "Check if a page is blocked by robots.txt, meta robots tags, or canonical settings.",
   "version": "0.1.0",
-  "permissions": [
-    "tabs"
-  ],
-  "host_permissions": [
-    "<all_urls>"
-  ],
+  "permissions": ["tabs"],
+  "host_permissions": ["<all_urls>"],
   "background": {
     "service_worker": "background.js"
   },
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
+      "matches": ["http://*/*", "https://*/*"],
       "js": ["content.js"]
     }
   ],
@@ -23,7 +19,3 @@
     "default_icon": {
       "16": "icon16.png",
       "48": "icon48.png",
-      "128": "icon128.png"
-    }
-  }
-}
