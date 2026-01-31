@@ -7,20 +7,25 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 async function checkRobots(pageUrl) {
   try {
+    // ❌ Ignore non-http pages
+    if (!pageUrl.startsWith("http://") && !pageUrl.startsWith("https://")) {
+      return {
+        skipped: true,
+        reason: "Internal browser page"
+      };
+    }
+
     const url = new URL(pageUrl);
     const robotsUrl = `${url.origin}/robots.txt`;
 
     const res = await fetch(robotsUrl);
     const text = await res.text();
 
-    const isBlocked = text.includes("Disallow: /");
-
     return {
       robotsUrl,
-      blocked: isBlocked,
-      raw: text.substring(0, 500)
+      blocked: text.includes("Disallow: /")
     };
   } catch (e) {
-    return { error: "Unable to fetch robots.txt" };
+    return { error: "robots.txt fetch failed" };
   }
 }
