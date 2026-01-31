@@ -7,7 +7,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 async function checkRobots(pageUrl) {
   try {
-    // ❌ Ignore non-http pages
+    // Ignore chrome:// and other internal pages
     if (!pageUrl.startsWith("http://") && !pageUrl.startsWith("https://")) {
       return {
         skipped: true,
@@ -23,9 +23,10 @@ async function checkRobots(pageUrl) {
 
     return {
       robotsUrl,
-      blocked: text.includes("Disallow: /")
+      blocked: text.includes("Disallow: /"),
+      fetched: true
     };
   } catch (e) {
-    return { error: "robots.txt fetch failed" };
+    return { error: "Unable to fetch robots.txt" };
   }
 }
