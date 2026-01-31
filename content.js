@@ -1,22 +1,22 @@
-(() => {
-  const robotsMeta = document.querySelector('meta[name="robots"]');
-  const canonicalTag = document.querySelector('link[rel="canonical"]');
+chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+  if (msg.type === "GET_META") {
+    const robotsMeta = document.querySelector('meta[name="robots"]');
+    const canonicalTag = document.querySelector('link[rel="canonical"]');
 
-  let noIndexFound = false;
-  let noFollowFound = false;
+    let noIndexNoFollow = "Not Found";
 
-  if (robotsMeta) {
-    const content = robotsMeta.content.toLowerCase();
-    noIndexFound = content.includes("noindex");
-    noFollowFound = content.includes("nofollow");
+    if (robotsMeta) {
+      const c = robotsMeta.content.toLowerCase();
+      if (c.includes("noindex") || c.includes("nofollow")) {
+        noIndexNoFollow = "Found";
+      }
+    }
+
+    sendResponse({
+      metaRobots: robotsMeta ? robotsMeta.content : "Not found",
+      canonical: canonicalTag ? canonicalTag.href : "Not found",
+      noIndexNoFollow
+    });
   }
-
-  chrome.runtime.sendMessage({
-    type: "META_DATA",
-    metaRobots: robotsMeta ? robotsMeta.content : "Not found",
-    canonical: canonicalTag ? canonicalTag.href : "Not found",
-    noIndexNoFollow: (noIndexFound || noFollowFound)
-      ? "Found"
-      : "Not Found"
-  });
-})();
+  return true;
+});
