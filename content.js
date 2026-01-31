@@ -6,8 +6,8 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     let noIndexNoFollow = "Not Found";
 
     if (robotsMeta) {
-      const c = robotsMeta.content.toLowerCase();
-      if (c.includes("noindex") || c.includes("nofollow")) {
+      const content = robotsMeta.content.toLowerCase();
+      if (content.includes("noindex") || content.includes("nofollow")) {
         noIndexNoFollow = "Found";
       }
     }
@@ -18,5 +18,6 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       noIndexNoFollow
     });
   }
+
   return true;
 });
