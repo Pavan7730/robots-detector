@@ -15,10 +15,11 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         sendResponse({
           robotsStatus: blocked ? "Possibly Blocked" : "Allowed"
         });
-      } catch {
+      } catch (e) {
         sendResponse({ robotsStatus: "Not Accessible" });
       }
     })();
+
     return true;
   }
 });
