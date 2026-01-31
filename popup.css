@@ -6,9 +6,18 @@ body {
 
 h3 {
   margin-top: 0;
+  font-size: 16px;
 }
 
-.status {
+.row {
   margin-bottom: 8px;
   font-size: 13px;
+}
+
+.ok {
+  color: green;
+}
+
+.warn {
+  color: red;
 }
