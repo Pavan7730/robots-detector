@@ -8,13 +8,14 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         const res = await fetch(robotsUrl);
         const text = await res.text();
 
-        const path = url.pathname;
-        const blocked = text.includes(`Disallow: ${path}`) || text.includes("Disallow: /");
+        const blocked =
+          text.includes("Disallow: /") ||
+          text.includes(`Disallow: ${url.pathname}`);
 
         sendResponse({
           robotsStatus: blocked ? "Possibly Blocked" : "Allowed"
         });
-      } catch (e) {
+      } catch {
         sendResponse({ robotsStatus: "Not Accessible" });
       }
     })();
