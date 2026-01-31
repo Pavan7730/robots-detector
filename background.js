@@ -1,18 +1,7 @@
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.type === "CHECK_ROBOTS") {
-    checkRobots(message.url).then(sendResponse);
-    return true;
-  }
-});
-
 async function checkRobots(pageUrl) {
   try {
-    // Ignore chrome:// and other internal pages
-    if (!pageUrl.startsWith("http://") && !pageUrl.startsWith("https://")) {
-      return {
-        skipped: true,
-        reason: "Internal browser page"
-      };
+    if (!pageUrl.startsWith("http")) {
+      return { skipped: true };
     }
 
     const url = new URL(pageUrl);
@@ -21,12 +10,20 @@ async function checkRobots(pageUrl) {
     const res = await fetch(robotsUrl);
     const text = await res.text();
 
+    const blocksAll = /User-agent:\s*\*\s*[\s\S]*?Disallow:\s*\//i.test(text);
+    const blocksGoogle = /User-agent:\s*Googlebot[\s\S]*?Disallow:\s*\//i.test(text);
+
+    const blockedBots = [];
+    if (/User-agent:\s*AhrefsBot[\s\S]*?Disallow:\s*\//i.test(text)) blockedBots.push("AhrefsBot");
+    if (/User-agent:\s*SemrushBot[\s\S]*?Disallow:\s*\//i.test(text)) blockedBots.push("SemrushBot");
+
     return {
       robotsUrl,
-      blocked: text.includes("Disallow: /"),
-      fetched: true
+      blocksAll,
+      blocksGoogle,
+      blockedBots
     };
   } catch (e) {
-    return { error: "Unable to fetch robots.txt" };
+    return { error: true };
   }
 }
