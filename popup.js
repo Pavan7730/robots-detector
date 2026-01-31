@@ -1,44 +1,34 @@
-const output = document.getElementById("output");
+function render(meta, robots) {
+  let indexingSignal = "Indexable signals present";
 
-chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
-  if (!tab?.url) {
-    output.innerHTML = "Unable to read page URL.";
-    return;
+  if (meta.metaRobots.includes("noindex")) {
+    indexingSignal = "Noindex detected";
+  } else if (robots.blocksGoogle || robots.blocksAll) {
+    indexingSignal = "Blocked from crawling";
+  } else if (meta.canonical !== "Not found") {
+    // Canonical exists but still indexable
+    indexingSignal = "Indexable (canonical set)";
   }
 
-  // Ask content script for meta info
-  chrome.tabs.sendMessage(tab.id, { type: "GET_META" }, (meta) => {
-    if (chrome.runtime.lastError || !meta) {
-      output.innerHTML = "Page data not accessible.";
-      return;
-    }
+  let robotsStatus = "Allowed for Googlebot";
+  let robotsDetails = "";
 
-    // Ask background for robots.txt
-    chrome.runtime.sendMessage(
-      { type: "CHECK_ROBOTS", url: tab.url },
-      (robots) => {
-        render(meta, robots);
-      }
-    );
-  });
-});
-
-function render(meta, robots) {
-  if (robots?.skipped) {
-    output.innerHTML = `
-      <div class="row warn">Robots.txt not available for this page.</div>
-    `;
-    return;
+  if (robots.blocksAll) {
+    robotsStatus = "Blocked for all bots";
+  } else if (robots.blocksGoogle) {
+    robotsStatus = "Blocked for Googlebot";
+  } else if (robots.blockedBots?.length) {
+    robotsStatus = "Partially blocked";
+    robotsDetails = `Blocked bots: ${robots.blockedBots.join(", ")}`;
   }
 
   output.innerHTML = `
+    <div class="row"><strong>Indexing Signals:</strong> ${indexingSignal}</div>
     <div class="row"><strong>Meta Robots:</strong> ${meta.metaRobots}</div>
     <div class="row"><strong>Canonical:</strong> ${meta.canonical}</div>
     <div class="row">
-      <strong>Robots.txt:</strong>
-      <span class="${robots.blocked ? "warn" : "ok"}">
-        ${robots.blocked ? "Possibly Blocked" : "Allowed"}
-      </span>
+      <strong>Robots.txt:</strong> ${robotsStatus}
+      ${robotsDetails ? `<br><small>${robotsDetails}</small>` : ""}
     </div>
   `;
 }
