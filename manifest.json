@@ -1,25 +1,20 @@
 {
   "manifest_version": 3,
-  "name": "Robots.txt & Meta Block Detector",
-  "description": "Check if a page is blocked by robots.txt, meta robots tags, or canonical settings.",
-  "version": "0.1.0",
-  "permissions": ["tabs"],
+  "name": "Robots & Indexing Status Detector",
+  "version": "1.0.0",
+  "description": "Detect robots.txt, meta robots, canonical, and indexing signals for the current page.",
+  "permissions": ["activeTab", "scripting"],
   "host_permissions": ["<all_urls>"],
   "background": {
     "service_worker": "background.js"
   },
+  "action": {
+    "default_popup": "popup.html"
+  },
   "content_scripts": [
     {
-      "matches": ["http://*/*", "https://*/*"],
+      "matches": ["<all_urls>"],
       "js": ["content.js"]
     }
-  ],
-  "action": {
-    "default_popup": "popup.html",
-    "default_icon": {
-      "16": "icon16.png",
-      "48": "icon48.png",
-      "128": "icon128.png"
-    }
-  }
+  ]
 }
